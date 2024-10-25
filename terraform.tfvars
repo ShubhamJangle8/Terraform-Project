@@ -5,7 +5,7 @@ instance_configs = {
     key_name       = "renuka"
     user_data      = <<-EOF
         # #!/bin/bash
-  
+
         # # Update ubuntu
         # sudo apt update -y
         # sudo hostname jenkins
@@ -63,11 +63,11 @@ instance_configs = {
         # Sync jenkins backup bucket with jenkins home directory
         # sudo systemctl stop jenkins
         # sudo tar -zcvf backupname.tar.gz /var/lib/jenkins/
-        # sudo aws s3 cp backupname.tar.gz s3://jenkins-backup-shubham/
+        # sudo aws s3 cp backupname.tar.gz s3://jenkins-backup-shubham/ --recursive
 
         # On New instance
         # sudo systemctl stop jenkins
-        # sudo aws s3 cp s3://jenkins-backup-shubham/backupname.tar.gz backupname.tar.gz
+        # sudo aws s3 sync s3://jenkins-backup-shubham/  /var/lib/jenkins/
         # sudo rm -rf /var/lib/jenkins/
         # sudo tar -zxvf backupname.tar.gz -C /
         # sudo systemctl start jenkins
@@ -95,6 +95,7 @@ instance_configs = {
     EOF
     my_environment = "jenkins"
     enable_root_volume = true
+    vpc_security_group_ids = [""]
   }
   instance2 = {
     ami_id         = "ami-0dee22c13ea7a9a67"
@@ -200,36 +201,31 @@ instance_configs = {
         EOF 
     my_environment = "prom"
     enable_root_volume = false
+    vpc_security_group_ids = [""]
   }
   instance3 = {
     ami_id         = "ami-0dee22c13ea7a9a67"
-    instance_type  = "t2.medium"
+    instance_type  = "t2.small"
     key_name       = "renuka"
     user_data      = <<-EOF
-        # #!/bin/bash
-        # sudo apt update -y
-
-        # # Install Docker
-        # sudo apt install docker.io -y
-        # sudo apt install net-tools -y
-
-        # # Start Docker service
-        # sudo systemctl start docker
-
-        # # Enable Docker to start on boot
-        # sudo systemctl enable docker
-        # sudo hostname sonar
-
-        # sudo chmod 777 /var/run/docker.sock
-        # sudo usermod -aG docker jenkins
-        # # Install sonarqube
-        # docker run -d -p 9000:9000 sonarqube:9.9.7-community
-       
-        # sudo apt install openjdk-17-jdk -y
+        
     EOF
     my_environment = "sonar"
     enable_root_volume = false
+    vpc_security_group_ids = [""]
   }
+  # instance4 = {
+  #   ami_id         = "ami-0dee22c13ea7a9a67"
+  #   instance_type  = "t2.small"
+  #   key_name       = "renuka"
+  #   user_data      = <<-EOF
+        
+  #   EOF
+  #   my_environment = "ansible"
+  #   enable_root_volume = false
+  #   vpc_security_group_ids = [""]
+  # }
+  
 }
 
 bucket_configs = {
@@ -237,3 +233,6 @@ bucket_configs = {
     bucket_name = "jenkins-backup-shubham"
   }
 }
+
+vpc_cidr = "10.1.0.0/16"
+subnet_cidr = "10.1.0.0/24"
