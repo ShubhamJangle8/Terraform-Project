@@ -12,13 +12,13 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-resource "aws_iam_user" "user1" {
-  name = "shubham"
-}
+# resource "aws_iam_user" "user1" {
+#   name = "shubham"
+# }
 
-resource "aws_iam_user" "user2" {
-  name = "renuka"
-}
+# resource "aws_iam_user" "user2" {
+#   name = "renuka"
+# }
 # data "aws_availability_zones" "available" {}
 
 # resource "aws_ebs_volume" "additional_volume" {
@@ -44,10 +44,23 @@ module "ec2_instance" {
   ami_id             = each.value.ami_id
   user_data          = each.value.user_data
   enable_root_volume = each.value.enable_root_volume
+  subnet_id          = module.vpc.subnet_id
+  vpc_security_group_ids = [module.sg.sg_id]
 }
 
-# module "s3" {
-#   source = "./modules/s3"
-#   for_each      = var.bucket_configs
-#   bucket_name   = each.value.bucket_name
-# }
+module "sg" {
+  source = "./modules/sg"
+  vpc_id = module.vpc.vpc_id
+}
+
+module "s3" {
+  source = "./modules/s3"
+  for_each      = var.bucket_configs
+  bucket_name   = each.value.bucket_name
+}
+
+module "vpc" {
+  source = "./modules/vpc"
+  vpc_cidr   = var.vpc_cidr
+  subnet_cidr = var.subnet_cidr
+}

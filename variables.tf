@@ -7,6 +7,7 @@ variable "instance_configs" {
     user_data      = string
     my_environment = string
     enable_root_volume = string
+    vpc_security_group_ids = list(string)
   }))
 }
 
@@ -16,3 +17,12 @@ variable "bucket_configs" {
     bucket_name = string
   }))
 }
+
+variable "vpc_cidr" {
+  description = "Map of configurations for each bucket"
+}
+
+variable "subnet_cidr" {
+  description = "Map of configurations for each bucket"
+}
+
