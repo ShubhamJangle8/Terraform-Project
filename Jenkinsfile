@@ -25,14 +25,15 @@ pipeline {
         stage('User Confirmation') {
             steps {
                 script {
+                    // Capture user input
                     def userInput = input(
                         id: 'confirmDeploy', message: 'Proceed with Terraform apply?',
                         parameters: [choice(name: 'CONFIRMATION', choices: 'yes\nno', description: 'Choose yes to proceed.')]
                     )
-                    if (userInput == 'yes') {
-                        echo 'User confirmed. Proceeding with apply.'
-                    } else {
-                        error 'User chose not to proceed. Aborting.'
+                    // Set the confirmation as a build variable if user selected "yes"
+                    currentBuild.description = "User selected: ${userInput}"
+                    if (userInput == 'no') {
+                        error 'User chose not to proceed. Aborting pipeline.'
                     }
                 }
             }
